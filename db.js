@@ -57,7 +57,7 @@ app.post("/input", async (req, res) => {
     await fs.promises.writeFile(filePath, fotoBuffer);
 
     // Aqui você pode adicionar um comando para armazenar as coordenadas e o nome no banco de dados, se necessário
-    const query = "INSERT INTO localizacao (nome, lat, lon, foto_url) VALUES (?, ?, ?, ?)";
+    const query = "INSERT INTO localizacao (nome, lat, lon, foto) VALUES (?, ?, ?, ?)";
     const fotoUrl = `/uploads/${pessoa}_foto.png`; // URL relativa para a foto
 
     pool.query(query, [pessoa, lat, lon, fotoUrl], (err, results) => {
