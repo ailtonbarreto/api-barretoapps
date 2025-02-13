@@ -62,7 +62,7 @@ app.post("/input", async (req, res) => {
     await fs.promises.writeFile(filePath, fotoBuffer);
 
   
-    const query = "INSERT INTO localizacao (nome, lat, lon, foto) VALUES (?, ?, ?, ?)";
+    const query = "INSERT INTO u771906953_barreto.localizacoes (pessoa, lat, lon, foto) VALUES (?, ?, ?, ?)";
     const fotoUrl = `/uploads/${pessoa}_foto.png`;
 
     pool.query(query, [pessoa, lat, lon, fotoUrl], (err, results) => {
