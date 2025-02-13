@@ -29,17 +29,20 @@ app.use(cors(corsOptions));
 
 // --------------------------------------------------------------------------------------
 // ROTA DE POST
-app.post('/input', (req, res) => {
-  const { pessoa, lat,lon } = req.body;
+app.post("/input", (req, res) => {
+  const { pessoa, lat, lon, foto } = req.body;
 
-  // AQUI FAÇA O POST NO BANCO DE DADOS
-  pool.query('INSERT INTO u771906953_barreto.localizacoes (pessoa, lat,lon) VALUES (?, ?, ?)', [pessoa, lat,lon], (err, results) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ message: 'Erro ao inserir dados' });
-    }
-    res.status(200).json({ message: 'Dados inseridos com sucesso!', results });
+
+  const fotoBuffer = Buffer.from(foto.split(",")[1], "base64");
+
+  const fs = require('fs');
+  fs.writeFile(`./uploads/${pessoa}_foto.png`, fotoBuffer, (err) => {
+      if (err) {
+          return res.status(500).json({ error: "Erro ao salvar foto" });
+      }
+      res.status(200).json({ message: "Localização e foto recebidas!" });
   });
+  
 });
 
 // --------------------------------------------------------------------------------------
