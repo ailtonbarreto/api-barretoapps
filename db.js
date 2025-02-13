@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import mysql from 'mysql2';  // Usando o mysql2 ao invés de pg
+import mysql from 'mysql2'; 
 import fs from 'fs';
 import path from 'path';
 
@@ -9,7 +9,7 @@ const app = express();
 // --------------------------------------------------------------------------------------
 // CONFIGURAÇÕES
 app.use(cors());
-app.use(express.json({ limit: '50mb' }));  // Aumente o limite de corpo para 50MB se necessário
+app.use(express.json({ limit: '50mb' }));
 
 // --------------------------------------------------------------------------------------
 // CRENDENCIAIS
@@ -35,16 +35,16 @@ app.use(cors(corsOptions));
 app.post("/input", async (req, res) => {
   const { pessoa, lat, lon, foto } = req.body;
 
-  // Verifica se a foto foi recebida corretamente
+
   if (!foto) {
     return res.status(400).json({ error: "Nenhuma foto recebida" });
   }
 
   try {
-    // Extrai o conteúdo da imagem base64
+  
     const fotoBuffer = Buffer.from(foto.split(",")[1], "base64");
 
-    // Cria o diretório de uploads, se não existir
+
     const uploadDir = path.join(__dirname, 'uploads');
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir);
