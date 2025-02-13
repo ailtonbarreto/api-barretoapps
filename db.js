@@ -1,8 +1,9 @@
 import express from 'express';
 import cors from 'cors';
-import mysql from 'mysql2'; 
+import mysql from 'mysql2';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
 const app = express();
 
@@ -35,30 +36,34 @@ app.use(cors(corsOptions));
 app.post("/input", async (req, res) => {
   const { pessoa, lat, lon, foto } = req.body;
 
-
+ 
   if (!foto) {
     return res.status(400).json({ error: "Nenhuma foto recebida" });
   }
 
   try {
-  
+
     const fotoBuffer = Buffer.from(foto.split(",")[1], "base64");
 
+   
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
 
+  
     const uploadDir = path.join(__dirname, 'uploads');
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir);
     }
 
-    // Cria o caminho onde a foto será salva
+ 
     const filePath = path.join(uploadDir, `${pessoa}_foto.png`);
 
-    // Salva a foto
+  
     await fs.promises.writeFile(filePath, fotoBuffer);
 
-    // Aqui você pode adicionar um comando para armazenar as coordenadas e o nome no banco de dados, se necessário
+  
     const query = "INSERT INTO localizacao (nome, lat, lon, foto) VALUES (?, ?, ?, ?)";
-    const fotoUrl = `/uploads/${pessoa}_foto.png`; // URL relativa para a foto
+    const fotoUrl = `/uploads/${pessoa}_foto.png`;
 
     pool.query(query, [pessoa, lat, lon, fotoUrl], (err, results) => {
       if (err) {
