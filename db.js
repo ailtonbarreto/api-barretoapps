@@ -66,15 +66,14 @@ app.post("/input", async (req, res) => {
 
 app.get("/localizacoes", async (req, res) => {
   try {
-    // Consulta ao banco de dados para buscar as localizações
-    const query = "SELECT pessoa, lat, lon, foto FROM u771906953_barreto.localizacoes";
+
+    const query = "SELECT * FROM u771906953_barreto.localizacoes";
     
     pool.query(query, (err, results) => {
       if (err) {
         return res.status(500).json({ error: "Erro ao buscar dados no banco de dados", details: err });
       }
 
-      // Se as localizações forem encontradas, retorna elas
       res.status(200).json({ data: results });
     });
     
