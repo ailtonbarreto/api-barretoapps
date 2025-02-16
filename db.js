@@ -43,12 +43,12 @@ app.post("/input", async (req, res) => {
   }
 
   try {
-    // Aqui estamos manipulando a foto como base64
+    // Convertendo Base64 para Buffer
     const fotoBuffer = Buffer.from(foto.split(",")[1], "base64");
 
     const query = "INSERT INTO u771906953_barreto.localizacoes (pessoa, lat, lon, foto) VALUES (?, ?, ?, ?)";
     
-    pool.query(query, [pessoa, lat, lon, foto], (err, results) => {
+    pool.query(query, [pessoa, lat, lon, fotoBuffer], (err, results) => {
       if (err) {
         return res.status(500).json({ error: "Erro ao salvar no banco de dados", details: err });
       }
@@ -61,12 +61,12 @@ app.post("/input", async (req, res) => {
   }
 });
 
+
 // --------------------------------------------------------------------------------------
 // GET DA BASE
 
 app.get("/localizacoes", async (req, res) => {
   try {
-
     const query = "SELECT * FROM u771906953_barreto.localizacoes";
     
     pool.query(query, (err, results) => {
@@ -74,15 +74,20 @@ app.get("/localizacoes", async (req, res) => {
         return res.status(500).json({ error: "Erro ao buscar dados no banco de dados", details: err });
       }
 
-      res.status(200).json({ data: results });
+      // Convertendo imagens para Base64 na resposta
+      const formattedResults = results.map((row) => ({
+        ...row,
+        foto: row.foto ? `data:image/jpeg;base64,${row.foto.toString("base64")}` : null
+      }));
+
+      res.status(200).json({ data: formattedResults });
     });
-    
+
   } catch (err) {
     console.error("Erro ao consultar as localizações:", err);
     res.status(500).json({ error: "Erro ao consultar as localizações", details: err.message });
   }
 });
-
 
 
 
