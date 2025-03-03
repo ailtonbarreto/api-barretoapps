@@ -1,8 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import mysql from 'mysql2';
-import { fileURLToPath } from 'url';
-import path from 'path';
+
 
 const app = express();
 
