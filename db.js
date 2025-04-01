@@ -98,7 +98,7 @@ app.post("/input_agendamento", async (req, res) => {
 
   try {
 
-    const query = "INSERT INTO u771906953_barreto.agenda (nome, data, hora_inicio, hora_fim, profissional) VALUES (?, ?, ?, ?, ?)";
+    const query = "INSERT INTO u771906953_barreto.tb_agenda (nome, data, hora_inicio, hora_fim, profissional) VALUES (?, ?, ?, ?, ?)";
     
     pool.query(query, [nome, data, hora_inicio, hora_fim, profissional], (err, results) => {
       if (err) {
@@ -118,7 +118,7 @@ app.post("/input_agendamento", async (req, res) => {
 
 app.get("/agendamento", async (req, res) => {
   try {
-    const query = "SELECT * FROM u771906953_barreto.agenda";
+    const query = "SELECT * FROM u771906953_barreto.tb_agenda";
     
     pool.query(query, (err, results) => {
       if (err) {
