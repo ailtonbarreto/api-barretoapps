@@ -125,15 +125,15 @@ app.get("/agendamento", async (req, res) => {
         return res.status(500).json({ error: "Erro ao buscar dados no banco de dados", details: err });
       }
 
-      res.status(200).json({ data: formattedResults });
+      // Retorna os resultados diretamente
+      res.status(200).json({ data: results });
     });
 
   } catch (err) {
-    console.error("Erro ao consultar as agenda:", err);
-    res.status(500).json({ error: "Erro ao consultar as agenda", details: err.message });
+    console.error("Erro ao consultar a agenda:", err);
+    res.status(500).json({ error: "Erro ao consultar a agenda", details: err.message });
   }
 });
-
 
 // --------------------------------------------------------------------------------------
 // INICIAR SERVIDOR
