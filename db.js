@@ -102,7 +102,7 @@ app.post("/input_agendamento", async (req, res) => {
 
     pool.query(query, [nome, data, hora_inicio, hora_fim, profissional], (err, results) => {
       if (err) {
-        console.error("Erro ao salvar no banco de dados:", err); // <-- Adicionando log do erro no console
+        console.error("Erro ao salvar no banco de dados:", err);
         return res.status(500).json({ 
           error: "Erro ao salvar no banco de dados", 
           details: err.sqlMessage || err.message 
