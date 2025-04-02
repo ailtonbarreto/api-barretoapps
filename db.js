@@ -92,26 +92,31 @@ app.get("/localizacoes", async (req, res) => {
 // INSERIR AGENDAMENTO
 
 app.post("/input_agendamento", async (req, res) => {
-
   const { nome, data, hora_inicio, hora_fim, profissional } = req.body;
 
-
   try {
+    const query = `
+      INSERT INTO u771906953_barreto.tb_agenda (nome, data, hora_inicio, hora_fim, profissional) 
+      VALUES (?, ?, ?, ?, ?)
+    `;
 
-    const query = "INSERT INTO u771906953_barreto.tb_agenda (nome, data, hora_inicio, hora_fim, profissional) VALUES (?, ?, ?, ?, ?)";
-    
     pool.query(query, [nome, data, hora_inicio, hora_fim, profissional], (err, results) => {
       if (err) {
-        return res.status(500).json({ error: "Erro ao salvar no banco de dados", details: err });
+        console.error("Erro ao salvar no banco de dados:", err); // <-- Adicionando log do erro no console
+        return res.status(500).json({ 
+          error: "Erro ao salvar no banco de dados", 
+          details: err.sqlMessage || err.message 
+        });
       }
-      res.status(200).json({ message: "Localização e foto recebidas com sucesso!", data: results });
+      res.status(200).json({ message: "Agendamento salvo com sucesso!", data: results });
     });
 
   } catch (err) {
-    console.error("Erro ao salvar", err);
+    console.error("Erro ao processar a requisição:", err);
     res.status(500).json({ error: "Erro ao processar", details: err.message });
   }
 });
+
 
 // --------------------------------------------------------------------------------------
 // VER AGENDAMENTO
