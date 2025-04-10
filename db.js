@@ -167,6 +167,35 @@ app.delete("/delete_agendamento/:id", async (req, res) => {
   }
 });
 
+// --------------------------------------------------------------------------------------
+// CADASTRAR PACIENTE
+
+app.post("/input_paciente", async (req, res) => {
+  const { nome, sobrenome, data_nascimento, telefone, genero} = req.body;
+
+  try {
+    const query = `
+      INSERT INTO u771906953_barreto.tb_pacientes (nome, sobrenome, data_nascimento, telefone, genero) 
+      VALUES (?, ?, ?, ?, ?)
+    `;
+
+    pool.query(query, [nome, sobrenome, data_nascimento, telefone, genero], (err, results) => {
+      if (err) {
+        console.error("Erro ao salvar no banco de dados:", err);
+        return res.status(500).json({ 
+          error: "Erro ao Cadastrar", 
+          details: err.sqlMessage || err.message 
+        });
+      }
+      res.status(200).json({ message: "Cadastro salvo com sucesso!", data: results });
+    });
+
+  } catch (err) {
+    console.error("Erro ao processar a requisição:", err);
+    res.status(500).json({ error: "Erro ao processar", details: err.message });
+  }
+});
+
 
 // --------------------------------------------------------------------------------------
 // INICIAR SERVIDOR
