@@ -196,6 +196,25 @@ app.post("/input_paciente", async (req, res) => {
   }
 });
 
+// --------------------------------------------------------------------------------------
+// LISTA DE PACIENTES
+
+app.get("/lista_pacientes", async (req, res) => {
+  try {
+    const query = "SELECT * FROM u771906953_barreto.tb_pacientes";
+    
+    pool.query(query, (err, results) => {
+      if (err) {
+        return res.status(500).json({ error: "Erro ao buscar dados no banco de dados", details: err });
+      }
+      res.status(200).json({ data: results });
+    });
+
+  } catch (err) {
+    console.error("Erro ao consultar a agenda:", err);
+    res.status(500).json({ error: "Erro ao consultar a agenda", details: err.message });
+  }
+});
 
 // --------------------------------------------------------------------------------------
 // INICIAR SERVIDOR
