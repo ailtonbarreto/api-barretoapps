@@ -171,15 +171,15 @@ app.delete("/delete_agendamento/:id", async (req, res) => {
 // CADASTRAR PACIENTE
 
 app.post("/input_paciente", async (req, res) => {
-  const { nome, sobrenome, data_nascimento, telefone, genero} = req.body;
+  const { nome, data_nascimento, telefone, genero} = req.body;
 
   try {
     const query = `
-      INSERT INTO u771906953_barreto.tb_pacientes (nome, sobrenome, data_nascimento, telefone, genero) 
-      VALUES (?, ?, ?, ?, ?)
+      INSERT INTO u771906953_barreto.tb_pacientes (nome, data_nascimento, telefone, genero) 
+      VALUES (?, ?, ?, ?)
     `;
 
-    pool.query(query, [nome, sobrenome, data_nascimento, telefone, genero], (err, results) => {
+    pool.query(query, [nome, data_nascimento, telefone, genero], (err, results) => {
       if (err) {
         console.error("Erro ao salvar no banco de dados:", err);
         return res.status(500).json({ 
@@ -218,7 +218,7 @@ app.get("/lista_pacientes", async (req, res) => {
 
 // --------------------------------------------------------------------------------------
 // INICIAR SERVIDOR
-const port = 3000;
+const port = 3004;
 app.listen(port, () => {
   console.log(`Servidor rodando na porta ${port}`);
 });
