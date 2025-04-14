@@ -171,7 +171,7 @@ app.delete("/delete_agendamento/:id", async (req, res) => {
 // CADASTRAR PACIENTE
 
 app.post("/input_paciente", async (req, res) => {
-  const { nome, sobrenome, data_nascimento, telefone, genero} = req.body;
+  const { nome, data_nascimento, telefone, genero} = req.body;
 
   try {
     const query = `
