@@ -27,7 +27,7 @@ const pool = mysql.createPool({
 
 const corsOptions = {
   origin: "*",
-  methods: 'GET,POST',
+  methods: ['GET', 'POST', 'DELETE']
 };
 
 app.use(cors(corsOptions));
@@ -173,26 +173,22 @@ app.delete("/delete_agendamento/:id", async (req, res) => {
 app.delete("/delete_cliente/:id", async (req, res) => {
   const { id } = req.params;
 
-  try {
-    const query = "DELETE FROM u771906953_barreto.tb_pacientes WHERE id = ?";
-    
-    pool.query(query, [id], (err, results) => {
-      if (err) {
-        console.error("Erro ao excluir agendamento:", err);
-        return res.status(500).json({ error: "Erro ao excluir agendamento", details: err.sqlMessage || err.message });
-      }
+  const query = "DELETE FROM u771906953_barreto.tb_pacientes WHERE id = ?";
 
-      if (results.affectedRows === 0) {
-        return res.status(404).json({ error: "Paciente não encontrado" });
-      }
+  pool.query(query, [id], (err, results) => {
+    if (err) {
+      console.error("Erro ao excluir Paciente:", err);
+      return res.status(500).json({ error: "Erro ao excluir paciente", details: err.sqlMessage || err.message });
+    }
 
-      res.status(200).json({ message: "Paciente excluído com sucesso!" });
-    });
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ error: "Paciente não encontrado" });
+    }
 
-  } catch (err) {
-    console.error("Erro ao processar a requisição:", err);
-    res.status(500).json({ error: "Erro ao processar a requisição", details: err.message });
-  }
+    res.status(200).json({ message: "Paciente excluído com sucesso!" });
+
+
+  });
 });
 
 
