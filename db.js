@@ -171,7 +171,10 @@ app.delete("/delete_agendamento/:id", async (req, res) => {
 // DELETAR CLIENTE
 
 app.delete("/delete_cliente/:id", async (req, res) => {
+
   const { id } = req.params;
+
+  console.log(`Requisição DELETE recebida para o ID ${req.params.id}`);
 
   const query = "DELETE FROM u771906953_barreto.tb_pacientes WHERE id = ?";
 
