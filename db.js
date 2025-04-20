@@ -1,8 +1,11 @@
 import express from 'express';
 import cors from 'cors';
 import mysql from 'mysql2';
+import dotenv from "dotenv";
 
 
+
+dotenv.config();
 const app = express();
 
 
@@ -253,6 +256,13 @@ app.get("/lista_pacientes", async (req, res) => {
     res.status(500).json({ error: "Erro ao consultar a agenda", details: err.message });
   }
 });
+
+// --------------------------------------------------------------------------------------
+// ESCONDER CHAVES DE ACESSO
+app.get("/keys", (req, res) => {
+  res.json({ base: process.env.PLANILHA_URL });
+});
+
 
 // --------------------------------------------------------------------------------------
 // INICIAR SERVIDOR
