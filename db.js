@@ -29,10 +29,11 @@ const pool = mysql.createPool({
 const corsOptions = {
   origin: "*",
   methods: ['GET', 'POST', 'DELETE'],
-  allowedHeaders: ['Content-Type']
+  allowedHeaders: ['Content-Type'],
 };
 
 app.use(cors(corsOptions));
+
 
 
 // --------------------------------------------------------------------------------------
@@ -172,37 +173,27 @@ app.delete("/delete_agendamento/:id", async (req, res) => {
 
 // --------------------------------------------------------------------------------------
 // DELETAR CLIENTE
-app.delete("/delete_cliente/:id",async (req, res) =>{
 
-  const {id} = req.params;
+app.delete('/delete/:id', (req, res) => {
+  const pacienteId = req.params.id;
 
-  console.log(id);
-
-  try{
-    const query = "DELETE FROM u771906953_barreto.tb_pacientes WHERE id = ?";
-
-
-    pool.query(query, [id], (err, results) => {
-
+  res.header('Access-Control-Allow-Origin', '*');
+  
+  const query = 'DELETE FROM u771906953_barreto.tb_pacientes WHERE id = ?';
+  
+  pool.query(query, [pacienteId], (err, result) => {
       if (err) {
-        console.error("Erro ao excluir Paciente:", err);
-
-        return res.status(500).json({ error: "Erro ao excluir Paciente", details: err.sqlMessage || err.message });
+          console.error("🔴 Erro no banco:", err);
+          return res.status(500).json({ 
+              success: false,
+              error: err.sqlMessage 
+          });
       }
 
-      if (results.affectedRows === 0) {
-        return res.status(404).json({ error: "Paciente não encontrado" });
-      }
-
-      res.status(200).json({ message: "Paciente excluído com sucesso!" });
-    });
-
-  } catch (err) {
-
-    console.error("Erro ao processar a requisição:", err);
-
-    res.status(500).json({ error: "Erro ao processar a requisição", details: err.message });
-  }
+      res.status(200)
+         .json({ success: true, message: 'Excluído com sucesso' })
+         .end(); // 🔥 Esta linha é crucial
+  });
 });
 
 // --------------------------------------------------------------------------------------
