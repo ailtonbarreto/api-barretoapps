@@ -263,26 +263,29 @@ app.get("/lista_pacientes", async (req, res) => {
 // --------------------------------------------------------------------------------------
 // ESCONDER CHAVES DE ACESSO
 
-app.get("/keys", async (req, res) => {
+app.post("/login", async (req, res) => {
+  const { usuario, senha } = req.body;
   const url = process.env.PLANILHA_URL;
-
-  if (!url) {
-    return res.status(500).json({ error: "URL não definida no .env" });
-  }
 
   try {
     const response = await fetch(url);
-    if (!response.ok) throw new Error("Erro ao buscar planilha");
-
     const csvText = await response.text();
-    const jsonData = await csv().fromString(csvText);
+    const usuarios = await csv().fromString(csvText);
 
-    res.json(jsonData);
+    const user = usuarios.find(u => u.user === usuario && u.password === senha);
+
+    if (user) {
+      // Oculta a senha na resposta
+      delete user.password;
+      return res.status(200).json({ success: true, user });
+    } else {
+      return res.status(401).json({ success: false, message: "Usuário ou senha inválidos" });
+    }
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Erro ao carregar a planilha", details: err.message });
+    return res.status(500).json({ success: false, message: "Erro ao processar login" });
   }
 });
+
 
 
 // --------------------------------------------------------------------------------------
