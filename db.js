@@ -2,10 +2,13 @@ import express from 'express';
 import cors from 'cors';
 import mysql from 'mysql2';
 import dotenv from "dotenv";
+import csv from "csvtojson";
 
 
 
-dotenv.config();
+
+dotenv.config({ path: './.env/.env' });
+
 const app = express();
 
 
@@ -259,8 +262,26 @@ app.get("/lista_pacientes", async (req, res) => {
 
 // --------------------------------------------------------------------------------------
 // ESCONDER CHAVES DE ACESSO
-app.get("/keys", (req, res) => {
-  res.json({ base: process.env.PLANILHA_URL });
+
+app.get("/keys", async (req, res) => {
+  const url = process.env.PLANILHA_URL;
+
+  if (!url) {
+    return res.status(500).json({ error: "URL não definida no .env" });
+  }
+
+  try {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error("Erro ao buscar planilha");
+
+    const csvText = await response.text();
+    const jsonData = await csv().fromString(csvText);
+
+    res.json(jsonData);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Erro ao carregar a planilha", details: err.message });
+  }
 });
 
 
