@@ -1,6 +1,11 @@
 import express from 'express';
 import cors from 'cors';
 import mysql from 'mysql2';
+import dotenv from "dotenv";
+import csv from "csvtojson";
+
+
+dotenv.config({ path: './.env/.env' });
 
 
 const app = express();
@@ -245,11 +250,38 @@ app.get("/lista_pacientes", async (req, res) => {
   }
 });
 
+// --------------------------------------------------------------------------------------
+// LOGIN
+
+app.post("/login", async (req, res) => {
+  const { usuario, senha } = req.body;
+  const url = process.env.PLANILHA_URL;
+
+  try {
+    const response = await fetch(url);
+    const csvText = await response.text();
+    const usuarios = await csv().fromString(csvText);
+
+    const user = usuarios.find(u => u.user === usuario && u.password === senha);
+
+    if (user) {
+      // Oculta a senha na resposta
+      delete user.password;
+      return res.status(200).json({ success: true, user });
+    } else {
+      return res.status(401).json({ success: false, message: "Usuário ou senha inválidos" });
+    }
+  } catch (err) {
+    return res.status(500).json({ success: false, message: "Erro ao processar login" });
+  }
+});
+
+
 
 
 // --------------------------------------------------------------------------------------
 // INICIAR SERVIDOR
-const port = 3004;
+const port = 3000;
 app.listen(port, () => {
   console.log(`Servidor rodando na porta ${port}`);
 });
