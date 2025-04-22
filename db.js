@@ -101,7 +101,12 @@ app.get("/localizacoes", async (req, res) => {
 // INSERIR AGENDAMENTO
 
 app.post("/input_agendamento", async (req, res) => {
+
+
   const { nome, procedimento, data, hora_inicio, hora_fim, profissional } = req.body;
+
+
+ 
 
   try {
     const query = `
@@ -188,7 +193,7 @@ app.delete('/delete/:id', (req, res) => {
   
   pool.query(query, [pacienteId], (err, result) => {
       if (err) {
-          console.error("🔴 Erro no banco:", err);
+          console.error("Erro no banco:", err);
           return res.status(500).json({ 
               success: false,
               error: err.sqlMessage 
@@ -197,7 +202,7 @@ app.delete('/delete/:id', (req, res) => {
 
       res.status(200)
          .json({ success: true, message: 'Excluído com sucesso' })
-         .end(); // 🔥 Esta linha é crucial
+         .end();
   });
 });
 
