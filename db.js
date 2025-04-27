@@ -151,6 +151,38 @@ app.get("/agendamento", async (req, res) => {
     res.status(500).json({ error: "Erro ao consultar a agenda", details: err.message });
   }
 });
+
+// --------------------------------------------------------------------------------------
+// VER AGENDAMENTO
+
+app.get("/filtrar_agendamentos", async (req, res) => {
+  const empresa = req.query.empresa; // Pegando a empresa da query string
+
+  if (!empresa) {
+    return res.status(400).json({ error: "Empresa não fornecida." });
+  }
+
+  try {
+    // Consulta filtrada pela empresa
+    const query = 'SELECT * FROM u771906953_barreto.tb_agenda WHERE empresa = ?';
+    
+    pool.query(query, [empresa], (err, results) => {
+      if (err) {
+        console.error("Erro ao filtrar agendamentos:", err);
+        return res.status(500).json({
+          error: "Erro ao filtrar agendamentos",
+          details: err.sqlMessage || err.message,
+        });
+      }
+      res.status(200).json({ data: results });
+    });
+  } catch (err) {
+    console.error("Erro ao processar a requisição:", err);
+    res.status(500).json({ error: "Erro ao processar", details: err.message });
+  }
+});
+
+
 // --------------------------------------------------------------------------------------
 // DELETAR AGENDAMENTO
 
