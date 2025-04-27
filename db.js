@@ -26,7 +26,7 @@ const pool = mysql.createPool({
   password: 'MQPj3:6GY_hFfjA',
   database: 'u771906953_barreto',
   port: 3306,
-}).promise();
+});
 
 // --------------------------------------------------------------------------------------
 // PERMISSOES DO SITE
@@ -74,6 +74,7 @@ app.post("/input", async (req, res) => {
 // GET DA BASE
 
 app.get("/localizacoes", async (req, res) => {
+
   try {
     const query = "SELECT * FROM u771906953_barreto.localizacoes";
     
@@ -206,28 +207,27 @@ app.delete('/delete/:id', (req, res) => {
 // --------------------------------------------------------------------------------------
 // ATUALIZAR CADASTRO
 
-app.put('/update_cadastro/:id', async (req,res) =>{
+app.put('/update_cadastro/:id', (req, res) => {
+  const { id } = req.params;
+  const { nome, data_nascimento, telefone, genero } = req.body;
 
-  const {id} = req.params;
+  pool.query(
+    'UPDATE u771906953_barreto.tb_pacientes SET nome = ?, data_nascimento = ?, telefone = ?, genero = ? WHERE id = ?',
+    [nome, data_nascimento, telefone, genero, id],
+    (err, result) => {
+      if (err) {
+        console.error("Erro ao atualizar paciente:", err);
+        return res.status(500).json({ message: 'Erro ao atualizar o paciente.', details: err.message });
+      }
 
-  const { nome, data_nascimento, telefone, genero} = req.body;
+      // Verifica se o paciente foi encontrado e atualizado
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ message: 'Paciente não encontrado.' });
+      }
 
-  try {
-    const [result] = await pool.query(
-      'UPDATE u771906953_barreto.tb_pacientes SET nome = ?, data_nascimento = ?, telefone = ?, genero = ? WHERE id = ?',
-      [nome, data_nascimento, telefone, genero, id]
-    );
-
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ message: 'Paciente não encontrado.' });
+      res.json({ message: 'Paciente atualizado com sucesso.' });
     }
-
-    res.json({ message: 'Paciente atualizado com sucesso.' });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Erro ao atualizar o paciente.' });
-  }
-
+  );
 });
 
 
@@ -279,6 +279,28 @@ app.get("/lista_pacientes", async (req, res) => {
     res.status(500).json({ error: "Erro ao consultar a agenda", details: err.message });
   }
 });
+
+// --------------------------------------------------------------------------------------
+// LISTA DE PACIENTES
+
+app.get("/lista_profissional", async (req, res) => {
+  try {
+    const query = "SELECT * FROM u771906953_barreto.tb_profissional";
+    
+    pool.query(query, (err, results) => {
+      if (err) {
+        return res.status(500).json({ error: "Erro ao buscar dados no banco de dados", details: err });
+      }
+      res.status(200).json({ data: results });
+    });
+
+  } catch (err) {
+    console.error("Erro ao consultar a agenda:", err);
+    res.status(500).json({ error: "Erro ao consultar a agenda", details: err.message });
+  }
+});
+
+
 
 // --------------------------------------------------------------------------------------
 // LOGIN
