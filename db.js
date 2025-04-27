@@ -26,14 +26,14 @@ const pool = mysql.createPool({
   password: 'MQPj3:6GY_hFfjA',
   database: 'u771906953_barreto',
   port: 3306,
-});
+}).promise();
 
 // --------------------------------------------------------------------------------------
 // PERMISSOES DO SITE
 
 const corsOptions = {
   origin: "*",
-  methods: ['GET', 'POST', 'DELETE'],
+  methods: ['GET', 'POST', 'DELETE','PUT'],
   allowedHeaders: ['Content-Type'],
 };
 
@@ -104,9 +104,6 @@ app.post("/input_agendamento", async (req, res) => {
 
 
   const { nome, procedimento, data, hora_inicio, hora_fim, profissional } = req.body;
-
-
- 
 
   try {
     const query = `
@@ -207,6 +204,34 @@ app.delete('/delete/:id', (req, res) => {
 });
 
 // --------------------------------------------------------------------------------------
+// ATUALIZAR CADASTRO
+
+app.put('/update_cadastro/:id', async (req,res) =>{
+
+  const {id} = req.params;
+
+  const { nome, data_nascimento, telefone, genero} = req.body;
+
+  try {
+    const [result] = await pool.query(
+      'UPDATE u771906953_barreto.tb_pacientes SET nome = ?, data_nascimento = ?, telefone = ?, genero = ? WHERE id = ?',
+      [nome, data_nascimento, telefone, genero, id]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Paciente não encontrado.' });
+    }
+
+    res.json({ message: 'Paciente atualizado com sucesso.' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Erro ao atualizar o paciente.' });
+  }
+
+});
+
+
+// --------------------------------------------------------------------------------------
 // CADASTRAR PACIENTE
 
 app.post("/input_paciente", async (req, res) => {
@@ -280,9 +305,6 @@ app.post("/login", async (req, res) => {
     return res.status(500).json({ success: false, message: "Erro ao processar login" });
   }
 });
-
-
-
 
 // --------------------------------------------------------------------------------------
 // INICIAR SERVIDOR
