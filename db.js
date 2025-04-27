@@ -208,26 +208,36 @@ app.delete('/delete/:id', (req, res) => {
 // ATUALIZAR CADASTRO
 
 app.put('/update_cadastro/:id', (req, res) => {
+
   const { id } = req.params;
+
   const { nome, data_nascimento, telefone, genero } = req.body;
 
   pool.query(
+
     'UPDATE u771906953_barreto.tb_pacientes SET nome = ?, data_nascimento = ?, telefone = ?, genero = ? WHERE id = ?',
+
     [nome, data_nascimento, telefone, genero, id],
+
     (err, result) => {
+
       if (err) {
         console.error("Erro ao atualizar paciente:", err);
+
         return res.status(500).json({ message: 'Erro ao atualizar o paciente.', details: err.message });
       }
 
-      // Verifica se o paciente foi encontrado e atualizado
       if (result.affectedRows === 0) {
+
         return res.status(404).json({ message: 'Paciente não encontrado.' });
       }
 
       res.json({ message: 'Paciente atualizado com sucesso.' });
+
     }
+
   );
+  
 });
 
 
@@ -299,7 +309,6 @@ app.get("/lista_profissional", async (req, res) => {
     res.status(500).json({ error: "Erro ao consultar a agenda", details: err.message });
   }
 });
-
 
 
 // --------------------------------------------------------------------------------------
