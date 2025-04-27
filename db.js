@@ -291,7 +291,44 @@ app.get("/lista_pacientes", async (req, res) => {
 });
 
 // --------------------------------------------------------------------------------------
-// LISTA DE PACIENTES
+// CADASTRAR PROFISSIONAL
+
+app.post("/input_profissional", async (req, res) => {
+
+  const {profissional, telefone, empresa} = req.body;
+
+
+  try {
+    const query = `
+      INSERT INTO u771906953_barreto.tb_profissional (profissional, telefone, empresa) 
+      VALUES (?, ?, ?)
+    `;
+
+    pool.query(query, [profissional, telefone, empresa], (err, results) => {
+
+      if (err) {
+
+        console.error("Erro ao salvar no banco de dados:", err);
+
+        return res.status(500).json({ 
+
+          error: "Erro ao Cadastrar", 
+
+          details: err.sqlMessage || err.message 
+        });
+      }
+      res.status(200).json({ message: "Cadastro salvo com sucesso!", data: results });
+    });
+
+  } catch (err) {
+    console.error("Erro ao processar a requisição:", err);
+    res.status(500).json({ error: "Erro ao processar", details: err.message });
+  }
+});
+
+
+// --------------------------------------------------------------------------------------
+// LISTA DE PROFISSIONAIS
 
 app.get("/lista_profissional", async (req, res) => {
   try {
