@@ -237,7 +237,7 @@ app.put('/update_cadastro/:id', (req, res) => {
     }
 
   );
-  
+
 });
 
 
@@ -305,8 +305,8 @@ app.get("/lista_profissional", async (req, res) => {
     });
 
   } catch (err) {
-    console.error("Erro ao consultar a agenda:", err);
-    res.status(500).json({ error: "Erro ao consultar a agenda", details: err.message });
+    console.error("Erro ao consultar a Base:", err);
+    res.status(500).json({ error: "Erro ao consultar a Base", details: err.message });
   }
 });
 
