@@ -153,10 +153,10 @@ app.get("/agendamento", async (req, res) => {
 });
 
 // --------------------------------------------------------------------------------------
-// VER AGENDAMENTO
+// AGENDAMENTO FILTRADO
 
 app.get("/filtrar_agendamentos", async (req, res) => {
-  const empresa = req.query.empresa; // Pegando a empresa da query string
+  const empresa = req.query.empresa;
 
   if (!empresa) {
     return res.status(400).json({ error: "Empresa não fornecida." });
