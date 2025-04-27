@@ -104,15 +104,15 @@ app.get("/localizacoes", async (req, res) => {
 app.post("/input_agendamento", async (req, res) => {
 
 
-  const { nome, procedimento, data, hora_inicio, hora_fim, profissional } = req.body;
+  const { nome, procedimento, data, hora_inicio, hora_fim, profissional, corProfissional } = req.body;
 
   try {
     const query = `
-      INSERT INTO u771906953_barreto.tb_agenda (nome, procedimento, data, hora_inicio, hora_fim, profissional) 
-      VALUES (?, ?, ?, ?, ?, ?)
+      INSERT INTO u771906953_barreto.tb_agenda (nome, procedimento, data, hora_inicio, hora_fim, profissional, cor) 
+      VALUES (?, ?, ?, ?, ?, ?, ?)
     `;
 
-    pool.query(query, [nome, procedimento, data, hora_inicio, hora_fim, profissional], (err, results) => {
+    pool.query(query, [nome, procedimento, data, hora_inicio, hora_fim, profissional, corProfissional ], (err, results) => {
       if (err) {
         console.error("Erro ao salvar no banco de dados:", err);
         return res.status(500).json({ 
@@ -295,16 +295,16 @@ app.get("/lista_pacientes", async (req, res) => {
 
 app.post("/input_profissional", async (req, res) => {
 
-  const {profissional, telefone, empresa} = req.body;
+  const {profissional, telefone, empresa, cor} = req.body;
 
 
   try {
     const query = `
-      INSERT INTO u771906953_barreto.tb_profissional (profissional, telefone, empresa) 
-      VALUES (?, ?, ?)
+      INSERT INTO u771906953_barreto.tb_profissional (profissional, telefone, empresa, cor) 
+      VALUES (?, ?, ?, ?)
     `;
 
-    pool.query(query, [profissional, telefone, empresa], (err, results) => {
+    pool.query(query, [profissional, telefone, empresa, cor], (err, results) => {
 
       if (err) {
 
@@ -352,7 +352,9 @@ app.get("/lista_profissional", async (req, res) => {
 // LOGIN
 
 app.post("/login", async (req, res) => {
+
   const { usuario, senha } = req.body;
+  
   const url = process.env.PLANILHA_URL;
 
   try {
@@ -363,7 +365,6 @@ app.post("/login", async (req, res) => {
     const user = usuarios.find(u => u.user === usuario && u.password === senha);
 
     if (user) {
-      // Oculta a senha na resposta
       delete user.password;
       return res.status(200).json({ success: true, user });
     } else {
