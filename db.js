@@ -104,15 +104,18 @@ app.get("/localizacoes", async (req, res) => {
 app.post("/input_agendamento", async (req, res) => {
 
 
-  const { nome, procedimento, data, hora_inicio, hora_fim, profissional, corProfissional } = req.body;
+  const { nome, procedimento, data, hora_inicio, hora_fim, profissional, corProfissional, empresa } = req.body;
 
   try {
+
     const query = `
-      INSERT INTO u771906953_barreto.tb_agenda (nome, procedimento, data, hora_inicio, hora_fim, profissional, cor) 
+
+      INSERT INTO u771906953_barreto.tb_agenda (nome, procedimento, data, hora_inicio, hora_fim, profissional, cor, empresa) 
       VALUES (?, ?, ?, ?, ?, ?, ?)
+
     `;
 
-    pool.query(query, [nome, procedimento, data, hora_inicio, hora_fim, profissional, corProfissional ], (err, results) => {
+    pool.query(query, [nome, procedimento, data, hora_inicio, hora_fim, profissional, corProfissional, empresa ], (err, results) => {
       if (err) {
         console.error("Erro ao salvar no banco de dados:", err);
         return res.status(500).json({ 
