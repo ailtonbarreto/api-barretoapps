@@ -111,7 +111,7 @@ app.post("/input_agendamento", async (req, res) => {
     const query = `
 
       INSERT INTO u771906953_barreto.tb_agenda (nome, procedimento, data, hora_inicio, hora_fim, profissional, cor, empresa) 
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 
     `;
 
@@ -145,7 +145,6 @@ app.get("/agendamento", async (req, res) => {
         return res.status(500).json({ error: "Erro ao buscar dados no banco de dados", details: err });
       }
 
-      // Retorna os resultados diretamente
       res.status(200).json({ data: results });
     });
 
@@ -280,15 +279,15 @@ app.put('/update_cadastro/:id', (req, res) => {
 // CADASTRAR PACIENTE
 
 app.post("/input_paciente", async (req, res) => {
-  const { nome, data_nascimento, telefone, genero} = req.body;
+  const { nome, data_nascimento, telefone, genero, empresa} = req.body;
 
   try {
     const query = `
-      INSERT INTO u771906953_barreto.tb_pacientes (nome, data_nascimento, telefone, genero) 
-      VALUES (?, ?, ?, ?)
+      INSERT INTO u771906953_barreto.tb_pacientes (nome, data_nascimento, telefone, genero, empresa) 
+      VALUES (?, ?, ?, ?, ?)
     `;
 
-    pool.query(query, [nome, data_nascimento, telefone, genero], (err, results) => {
+    pool.query(query, [nome, data_nascimento, telefone, genero, empresa], (err, results) => {
       if (err) {
         console.error("Erro ao salvar no banco de dados:", err);
         return res.status(500).json({ 
