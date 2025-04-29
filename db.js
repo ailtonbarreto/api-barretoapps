@@ -307,11 +307,17 @@ app.post("/input_paciente", async (req, res) => {
 // --------------------------------------------------------------------------------------
 // LISTA DE PACIENTES
 
-app.get("/lista_pacientes", async (req, res) => {
+app.get("/lista_pacientes/:empresa", async (req, res) => {
+  const empresa = req.params.empresa;
+
+  if (!empresa) {
+    return res.status(400).json({ error: "Empresa não informada." });
+  }
+
   try {
-    const query = "SELECT * FROM u771906953_barreto.tb_pacientes";
+    const query = "SELECT * FROM u771906953_barreto.tb_pacientes WHERE empresa = ?";
     
-    pool.query(query, (err, results) => {
+    pool.query(query, [empresa], (err, results) => {
       if (err) {
         return res.status(500).json({ error: "Erro ao buscar dados no banco de dados", details: err });
       }
@@ -319,10 +325,11 @@ app.get("/lista_pacientes", async (req, res) => {
     });
 
   } catch (err) {
-    console.error("Erro ao consultar a agenda:", err);
-    res.status(500).json({ error: "Erro ao consultar a agenda", details: err.message });
+    console.error("Erro ao consultar pacientes:", err);
+    res.status(500).json({ error: "Erro ao consultar pacientes", details: err.message });
   }
 });
+
 
 // --------------------------------------------------------------------------------------
 // CADASTRAR PROFISSIONAL
@@ -364,20 +371,61 @@ app.post("/input_profissional", async (req, res) => {
 // --------------------------------------------------------------------------------------
 // LISTA DE PROFISSIONAIS
 
-app.get("/lista_profissional", async (req, res) => {
+app.get("/lista_profissional/:empresa", async (req, res) => {
+  const empresa = req.params.empresa; // Pegando empresa da URL
+
+  if (!empresa) {
+    return res.status(400).json({ error: "Empresa não fornecida." });
+  }
+
   try {
-    const query = "SELECT * FROM u771906953_barreto.tb_profissional";
+    const query = "SELECT * FROM u771906953_barreto.tb_profissional WHERE empresa = ?";
     
-    pool.query(query, (err, results) => {
+    pool.query(query, [empresa], (err, results) => {
       if (err) {
-        return res.status(500).json({ error: "Erro ao buscar dados no banco de dados", details: err });
+        console.error("Erro ao buscar profissionais:", err);
+        return res.status(500).json({ 
+          error: "Erro ao buscar profissionais", 
+          details: err.sqlMessage || err.message 
+        });
       }
       res.status(200).json({ data: results });
     });
 
   } catch (err) {
-    console.error("Erro ao consultar a Base:", err);
-    res.status(500).json({ error: "Erro ao consultar a Base", details: err.message });
+    console.error("Erro ao processar a requisição:", err);
+    res.status(500).json({ error: "Erro ao processar", details: err.message });
+  }
+});
+
+// --------------------------------------------------------------------------------------
+// LISTA DE PROCEDIMENTOS
+
+app.get("/lista_procedimento/:empresa", async (req, res) => {
+
+  const empresa = req.params.empresa;
+
+  if (!empresa) {
+    return res.status(400).json({ error: "Empresa não fornecida." });
+  }
+
+  try {
+    const query = "SELECT * FROM u771906953_barreto.tb_procedimento WHERE empresa = ?";
+    
+    pool.query(query, [empresa], (err, results) => {
+      if (err) {
+        console.error("Erro ao buscar profissionais:", err);
+        return res.status(500).json({ 
+          error: "Erro ao buscar profissionais", 
+          details: err.sqlMessage || err.message 
+        });
+      }
+      res.status(200).json({ data: results });
+    });
+
+  } catch (err) {
+    console.error("Erro ao processar a requisição:", err);
+    res.status(500).json({ error: "Erro ao processar", details: err.message });
   }
 });
 
