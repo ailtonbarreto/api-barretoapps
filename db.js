@@ -367,6 +367,41 @@ app.post("/input_profissional", async (req, res) => {
   }
 });
 
+// --------------------------------------------------------------------------------------
+// ATUALIZAR CADASTRO
+
+app.put('/update_profissional/:profissionalId', (req, res) => {
+
+  const { profissionalId  } = req.params;
+
+  const { profissional, telefone, cor } = req.body;
+
+  pool.query(
+
+    'UPDATE u771906953_barreto.tb_profissional SET profissional = ?, telefone = ?, cor = ? WHERE id = ?',
+
+    [profissional, telefone, cor, profissionalId ],
+
+    (err, result) => {
+
+      if (err) {
+        console.error("Erro ao atualizar paciente:", err);
+
+        return res.status(500).json({ message: 'Erro ao atualizar o paciente.', details: err.message });
+      }
+
+      if (result.affectedRows === 0) {
+
+        return res.status(404).json({ message: 'Paciente não encontrado.' });
+      }
+
+      res.json({ message: 'Paciente atualizado com sucesso.' });
+
+    }
+
+  );
+
+});
 
 // --------------------------------------------------------------------------------------
 // LISTA DE PROFISSIONAIS
@@ -396,6 +431,31 @@ app.get("/lista_profissional/:empresa", async (req, res) => {
     console.error("Erro ao processar a requisição:", err);
     res.status(500).json({ error: "Erro ao processar", details: err.message });
   }
+});
+
+// --------------------------------------------------------------------------------------
+// DELETAR PROFISSIONAL
+
+app.delete('/delete_profissional/:id', (req, res) => {
+  const profissionalId = req.params.id;
+
+  res.header('Access-Control-Allow-Origin', '*');
+  
+  const query = 'DELETE FROM u771906953_barreto.tb_profissional WHERE id = ?';
+  
+  pool.query(query, [profissionalId], (err, result) => {
+      if (err) {
+          console.error("Erro no banco:", err);
+          return res.status(500).json({ 
+              success: false,
+              error: err.sqlMessage 
+          });
+      }
+
+      res.status(200)
+         .json({ success: true, message: 'Excluído com sucesso' })
+         .end();
+  });
 });
 
 // --------------------------------------------------------------------------------------
