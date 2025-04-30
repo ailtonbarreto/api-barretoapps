@@ -470,7 +470,7 @@ app.get("/lista_procedimento/:empresa", async (req, res) => {
   }
 
   try {
-    const query = "SELECT * FROM u771906953_barreto.tb_procedimento WHERE empresa = ?";
+    const query = "SELECT * FROM u771906953_barreto.tb_servicos WHERE empresa = ?";
     
     pool.query(query, [empresa], (err, results) => {
       if (err) {
