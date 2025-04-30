@@ -104,18 +104,18 @@ app.get("/localizacoes", async (req, res) => {
 app.post("/input_agendamento", async (req, res) => {
 
 
-  const { nome, procedimento, data, hora_inicio, hora_fim, profissional, corProfissional, empresa } = req.body;
+  const { nome, procedimento, data, hora_inicio, hora_fim, profissional, corProfissional, empresa, valor } = req.body;
 
   try {
 
     const query = `
 
-      INSERT INTO u771906953_barreto.tb_agenda (nome, procedimento, data, hora_inicio, hora_fim, profissional, cor, empresa) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO u771906953_barreto.tb_agenda (nome, procedimento, data, hora_inicio, hora_fim, profissional, cor, empresa, valor) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
 
     `;
 
-    pool.query(query, [nome, procedimento, data, hora_inicio, hora_fim, profissional, corProfissional, empresa ], (err, results) => {
+    pool.query(query, [nome, procedimento, data, hora_inicio, hora_fim, profissional, corProfissional, empresa, valor ], (err, results) => {
       if (err) {
         console.error("Erro ao salvar no banco de dados:", err);
         return res.status(500).json({ 
@@ -487,6 +487,96 @@ app.get("/lista_procedimento/:empresa", async (req, res) => {
     console.error("Erro ao processar a requisição:", err);
     res.status(500).json({ error: "Erro ao processar", details: err.message });
   }
+});
+
+// --------------------------------------------------------------------------------------
+// CADASTRAR SERVICO
+
+app.post("/input_servico", async (req, res) => {
+  const { procedimento, empresa, valor} = req.body;
+
+  try {
+    const query = `
+      INSERT INTO u771906953_barreto.tb_servicos (procedimento, empresa,valor) 
+      VALUES (?, ?, ?)
+    `;
+
+    pool.query(query, [procedimento, empresa, valor], (err, results) => {
+      if (err) {
+        console.error("Erro ao salvar no banco de dados:", err);
+        return res.status(500).json({ 
+          error: "Erro ao Cadastrar", 
+          details: err.sqlMessage || err.message 
+        });
+      }
+      res.status(200).json({ message: "Cadastro salvo com sucesso!", data: results });
+    });
+
+  } catch (err) {
+    console.error("Erro ao processar a requisição:", err);
+    res.status(500).json({ error: "Erro ao processar", details: err.message });
+  }
+});
+
+// --------------------------------------------------------------------------------------
+// DELETAR SERVICO
+
+app.delete('/delete_servico/:id', (req, res) => {
+  const servicoID = req.params.id;
+
+  res.header('Access-Control-Allow-Origin', '*');
+  
+  const query = 'DELETE FROM u771906953_barreto.tb_servicos WHERE id = ?';
+  
+  pool.query(query, [servicoID], (err, result) => {
+      if (err) {
+          console.error("Erro no banco:", err);
+          return res.status(500).json({ 
+              success: false,
+              error: err.sqlMessage 
+          });
+      }
+
+      res.status(200)
+         .json({ success: true, message: 'Excluído com sucesso' })
+         .end();
+  });
+});
+
+// --------------------------------------------------------------------------------------
+// ATUALIZAR SERVICO
+
+app.put('/update_procedimento/:servicoId', (req, res) => {
+
+  const { servicoId } = req.params;
+
+  const { procedimento, valor } = req.body;
+
+  pool.query(
+
+    'UPDATE u771906953_barreto.tb_servicos SET procedimento = ?, valor = ? WHERE id = ?',
+
+    [procedimento, valor, servicoId ],
+
+    (err, result) => {
+
+      if (err) {
+        console.error("Erro ao atualizar serviço:", err);
+
+        return res.status(500).json({ message: 'Erro ao atualizar o serviço.', details: err.message });
+      }
+
+      if (result.affectedRows === 0) {
+
+        return res.status(404).json({ message: 'Paciente não encontrado.' });
+      }
+
+      res.json({ message: 'Paciente atualizado com sucesso.' });
+
+    }
+
+  );
+
 });
 
 
