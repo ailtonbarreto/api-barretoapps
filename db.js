@@ -336,16 +336,16 @@ app.get("/lista_pacientes/:empresa", async (req, res) => {
 
 app.post("/input_profissional", async (req, res) => {
 
-  const {profissional, telefone, empresa, cor} = req.body;
+  const {profissional, empresa, telefone, cor} = req.body;
 
 
   try {
     const query = `
-      INSERT INTO u771906953_barreto.tb_profissional (profissional, telefone, empresa, cor) 
+      INSERT INTO u771906953_barreto.tb_profissional (profissional, empresa, telefone, cor) 
       VALUES (?, ?, ?, ?)
     `;
 
-    pool.query(query, [profissional, telefone, empresa, cor], (err, results) => {
+    pool.query(query, [profissional, empresa, telefone, cor], (err, results) => {
 
       if (err) {
 
