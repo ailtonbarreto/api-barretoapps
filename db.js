@@ -51,7 +51,6 @@ app.post("/input", async (req, res) => {
   }
 
   try {
-    // Convertendo Base64 para Buffer
     const fotoBuffer = Buffer.from(foto.split(",")[1], "base64");
 
     const query = "INSERT INTO u771906953_barreto.localizacoes (pessoa, lat, lon, foto) VALUES (?, ?, ?, ?)";
@@ -104,18 +103,18 @@ app.get("/localizacoes", async (req, res) => {
 app.post("/input_agendamento", async (req, res) => {
 
 
-  const { nome, procedimento, data, hora_inicio, hora_fim, profissional, corProfissional, empresa, valor } = req.body;
+  const { nome, procedimento, data, hora_inicio, hora_fim, profissional, empresa, valor } = req.body;
 
   try {
 
     const query = `
 
-      INSERT INTO u771906953_barreto.tb_agenda (nome, procedimento, data, hora_inicio, hora_fim, profissional, cor, empresa, valor) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO u771906953_barreto.tb_agenda (nome, procedimento, data, hora_inicio, hora_fim, profissional, empresa, valor) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 
     `;
 
-    pool.query(query, [nome, procedimento, data, hora_inicio, hora_fim, profissional, corProfissional, empresa, valor ], (err, results) => {
+    pool.query(query, [nome, procedimento, data, hora_inicio, hora_fim, profissional, empresa, valor ], (err, results) => {
       if (err) {
         console.error("Erro ao salvar no banco de dados:", err);
         return res.status(500).json({ 
@@ -133,41 +132,42 @@ app.post("/input_agendamento", async (req, res) => {
 });
 
 
+
 // --------------------------------------------------------------------------------------
-// VER AGENDAMENTO
-
-app.get("/agendamento", async (req, res) => {
-  try {
-    const query = "SELECT * FROM u771906953_barreto.tb_agenda";
-    
-    pool.query(query, (err, results) => {
-      if (err) {
-        return res.status(500).json({ error: "Erro ao buscar dados no banco de dados", details: err });
-      }
-
-      res.status(200).json({ data: results });
-    });
-
-  } catch (err) {
-    console.error("Erro ao consultar a agenda:", err);
-    res.status(500).json({ error: "Erro ao consultar a agenda", details: err.message });
-  }
-});
+// AGENDAMENTO FILTRADO
 
 // --------------------------------------------------------------------------------------
 // AGENDAMENTO FILTRADO
 
 app.get("/filtrar_agendamentos/:empresa", async (req, res) => {
-  const empresa = req.params.empresa; 
+  const empresa = req.params.empresa;
 
   if (!empresa) {
     return res.status(400).json({ error: "Empresa não fornecida." });
   }
 
   try {
-    // Consulta filtrada pela empresa
-    const query = 'SELECT * FROM u771906953_barreto.tb_agenda WHERE empresa = ?';
-    
+    const query = `
+      SELECT 
+        u771906953_barreto.tb_agenda.id,
+        u771906953_barreto.tb_agenda.nome,
+        u771906953_barreto.tb_agenda.procedimento,
+        u771906953_barreto.tb_agenda.data,
+        u771906953_barreto.tb_agenda.hora_inicio,
+        u771906953_barreto.tb_agenda.hora_fim,
+        u771906953_barreto.tb_agenda.profissional,
+        u771906953_barreto.tb_agenda.empresa,
+        u771906953_barreto.tb_agenda.valor,
+        u771906953_barreto.tb_profissional.cor
+      FROM 
+        u771906953_barreto.tb_agenda
+      JOIN 
+        u771906953_barreto.tb_profissional 
+        ON u771906953_barreto.tb_agenda.profissional = u771906953_barreto.tb_profissional.profissional
+      WHERE 
+        u771906953_barreto.tb_agenda.empresa = ?;
+    `;
+
     pool.query(query, [empresa], (err, results) => {
       if (err) {
         console.error("Erro ao filtrar agendamentos:", err);
