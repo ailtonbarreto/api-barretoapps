@@ -98,6 +98,33 @@ app.get("/localizacoes", async (req, res) => {
 });
 
 // --------------------------------------------------------------------------------------
+// CARREGAR TEMAS
+
+app.get("/tema/:empresa", async (req, res) => {
+  const empresa = req.params.empresa;
+
+  if (!empresa) {
+    return res.status(400).json({ error: "Empresa não informada." });
+  }
+
+  try {
+    const query = "SELECT * FROM u771906953_barreto.tb_temas WHERE empresa = ?";
+    
+    pool.query(query, [empresa], (err, results) => {
+      if (err) {
+        return res.status(500).json({ error: "Erro ao buscar dados no banco de dados", details: err });
+      }
+      res.status(200).json({ data: results });
+    });
+
+  } catch (err) {
+    console.error("Erro ao consultar temas:", err);
+    res.status(500).json({ error: "Erro ao consultar tema", details: err.message });
+  }
+});
+
+
+// --------------------------------------------------------------------------------------
 // INSERIR AGENDAMENTO
 
 app.post("/input_agendamento", async (req, res) => {
@@ -133,8 +160,6 @@ app.post("/input_agendamento", async (req, res) => {
 
 
 
-// --------------------------------------------------------------------------------------
-// AGENDAMENTO FILTRADO
 
 // --------------------------------------------------------------------------------------
 // AGENDAMENTO FILTRADO
